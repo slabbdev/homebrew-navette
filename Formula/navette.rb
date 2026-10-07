@@ -1,12 +1,12 @@
 class Navette < Formula
   desc "The browser for agents — one tiny binary driving the OS WebView (MCP native)"
   homepage "https://github.com/slabbdev/navette"
-  version "1.6.0"
+  version "1.7.0"
   license "MIT"
 
   if OS.mac? && Hardware::CPU.arm?
-    url "https://github.com/slabbdev/navette/releases/download/v1.6.0/navette-darwin-arm64"
-    sha256 "9d0b7c3a68eb5594e2f65c3f878a19883f7e604c8e7754293e254ba79c83144d"
+    url "https://github.com/slabbdev/navette/releases/download/v1.7.0/navette-darwin-arm64"
+    sha256 "45857afc7a51b42e6d27c42295600aa7120c461829fd1d384bb22060d2d401ca"
   end
 
   def install
