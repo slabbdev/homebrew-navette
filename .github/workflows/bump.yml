@@ -1,0 +1,53 @@
+name: bump
+
+# Keeps Formula/navette.rb in sync with the latest slabbdev/navette release.
+# Runs hourly; also triggerable by hand right after tagging.
+
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: bump formula to the latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          LATEST=$(gh api repos/slabbdev/navette/releases/latest --jq .tag_name)
+          VER=${LATEST#v}
+          CURR=$(sed -n 's/^  version "\(.*\)"/\1/p' Formula/navette.rb)
+          echo "tap: $CURR — latest release: $VER"
+
+          [ "$VER" = "$CURR" ] && { echo "up to date"; exit 0; }
+
+          URL="https://github.com/slabbdev/navette/releases/download/${LATEST}/navette-darwin-arm64"
+          if ! gh release view "$LATEST" -R slabbdev/navette --json assets --jq '.assets[].name' | grep -qx 'navette-darwin-arm64'; then
+            echo "darwin-arm64 asset not attached yet — retrying next run"; exit 0
+          fi
+          curl -fsSL "$URL" -o asset.bin
+          SHA=$(sha256sum asset.bin | cut -d' ' -f1)
+
+          sed -e "s/^  version \".*\"/  version \"${VER}\"/" \
+              -e "s|releases/download/v[^/]*/navette-darwin-arm64|releases/download/${LATEST}/navette-darwin-arm64|" \
+              -e "s/sha256 \"[0-9a-f]*\"/sha256 \"${SHA}\"/" \
+              Formula/navette.rb > Formula/navette.rb.new
+          mv Formula/navette.rb.new Formula/navette.rb
+          rm asset.bin
+
+          grep -q "\"${VER}\"" Formula/navette.rb || { echo "sed produced no version change"; exit 1; }
+          cat Formula/navette.rb
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "bump: navette ${LATEST}"
+          git push
