@@ -16,4 +16,5 @@ The formula is bumped automatically: an hourly workflow
 `gh workflow run bump -R slabbdev/homebrew-tap`.
 
 > Formerly `slabbdev/navette` — the repo was renamed, old taps keep working through
-> GitHub's redirect.
+> GitHub's redirect. Switching an existing install to this tap:
+> `brew uninstall navette && brew install slabbdev/tap/navette`.
