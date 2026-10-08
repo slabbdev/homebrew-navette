@@ -13,7 +13,7 @@ macOS arm64 (Apple Silicon) build. Windows and Linux: grab the release binary fr
 The formula is bumped automatically: an hourly workflow
 ([bump.yml](.github/workflows/bump.yml)) tracks the latest navette release and updates
 `Formula/navette.rb` with the new version and sha256 — run it by hand with
-`gh workflow run bump -R slabbdev/tap`.
+`gh workflow run bump -R slabbdev/homebrew-tap`.
 
 > Formerly `slabbdev/navette` — the repo was renamed, old taps keep working through
 > GitHub's redirect.
